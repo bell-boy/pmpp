@@ -1,0 +1,8 @@
+# Local build outputs
+MP*/template
+MP*/solution
+MP*/template.o
+MP*/bench/
+
+# Dependency bootstrapped by the root Makefile
+third_party/libwb/

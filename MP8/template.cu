@@ -1,7 +1,5 @@
 #include <wb.h>
 
-#define Tile_width 1024
-
 #define wbCheck(stmt)                                                     \
   do {                                                                    \
     cudaError_t err = stmt;                                               \
@@ -16,18 +14,6 @@ __global__ void spmvJDSKernel(float *out, int *matColStart, int *matCols,
                               int *matRowPerm, int *matRows,
                               float *matData, float *vec, int dim) {
   //@@ insert spmv kernel for jds format
-  int row = blockIdx.x * blockDim.x + threadIdx.x;
-  if (row < dim) {
-    float dot = 0;
-    unsigned int sec = 0;
-    while(matRows[row]>sec){
-      dot += matData[matColStart[sec]+row] * vec[matCols[matColStart[sec]+row]];
-      sec ++ ; 
-    }
-    out[matRowPerm[row]] = dot;
-
-  }
-
 }
 
 static void spmvJDS(float *out, int *matColStart, int *matCols,
@@ -35,8 +21,6 @@ static void spmvJDS(float *out, int *matColStart, int *matCols,
                     float *vec, int dim) {
   
   //@@ invoke spmv kernel for jds format
-  int blocks = ceil(dim/1.0*Tile_width);
-  spmvJDSKernel<<<blocks,Tile_width>>>(out,matColStart,matCols,matRowPerm,matRows,matData,vec,dim);
 }
 
 int main(int argc, char **argv) {

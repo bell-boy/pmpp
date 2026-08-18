@@ -2,9 +2,7 @@
 #include "wb.h"
 
 __global__ void vecAdd(float *in1, float *in2, float *out, int len) {
-  int i = threadIdx.x + blockDim.x * blockIdx.x;
-  if ( i < len) out[i] = in1[i] + in2[i];
-
+  //@@ Insert code to implement vector addition here
 }
 
 int main(int argc, char **argv) {
@@ -30,37 +28,24 @@ int main(int argc, char **argv) {
   wbLog(TRACE, "The input length is ", inputLength);
 
   wbTime_start(GPU, "Allocating GPU memory.");
-  size_t the_lenth = inputLength * sizeof(float);
-  cudaMalloc((void**)&deviceInput1, the_lenth);
-  cudaMalloc((void**)&deviceInput2, the_lenth);
-  cudaMalloc((void**)&deviceOutput, the_lenth);
+  //@@ Allocate GPU memory here
   wbTime_stop(GPU, "Allocating GPU memory.");
 
   wbTime_start(GPU, "Copying input memory to the GPU.");
-  cudaMemcpy(deviceInput1,hostInput1,the_lenth,cudaMemcpyHostToDevice);
-  cudaMemcpy(deviceInput2,hostInput2,the_lenth,cudaMemcpyHostToDevice);
+  //@@ Copy memory to the GPU here
   wbTime_stop(GPU, "Copying input memory to the GPU.");
-  dim3 DimGrid(ceil(inputLength/256.0), 1, 1);
-
-  dim3 DimBlok(256, 1, 1);
   //@@ Initialize the grid and block dimensions here
 
   wbTime_start(Compute, "Performing CUDA computation");
-  vecAdd<<<DimGrid,DimBlok>>>(deviceInput1,deviceInput2,deviceOutput,inputLength);
+  //@@ Launch the GPU Kernel here
   cudaDeviceSynchronize();
   wbTime_stop(Compute, "Performing CUDA computation");
   wbTime_start(Copy, "Copying output memory to the CPU");
-  cudaMemcpy(hostOutput,deviceOutput,the_lenth,cudaMemcpyDeviceToHost);
-
-
+  //@@ Copy the GPU memory back to the CPU here
   wbTime_stop(Copy, "Copying output memory to the CPU");
 
   wbTime_start(GPU, "Freeing GPU Memory");
-  cudaFree(deviceInput1);
-  cudaFree(deviceInput2);
-  cudaFree(deviceOutput);
-
-
+  //@@ Free the GPU memory here
   wbTime_stop(GPU, "Freeing GPU Memory");
   wbSolution(args, hostOutput, inputLength);
 

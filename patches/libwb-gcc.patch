@@ -1,0 +1,17 @@
+diff --git a/vendor/json11.cpp b/vendor/json11.cpp
+index 3f22f2f..53fd4d0 100644
+--- a/vendor/json11.cpp
++++ b/vendor/json11.cpp
+@@ -170,6 +170,12 @@ protected:
+     void dump(string &out) const override { json11::dump(m_value, out); }
+ };
+ 
++// Ordering two null values is always false. Newer GCC versions reject the
++// generic Value implementation because relational comparison of nullptr_t
++// was removed from the language.
++template <>
++bool Value<Json::NUL, std::nullptr_t>::less(const JsonValue *) const { return false; }
++
+ class JsonDouble final : public Value<Json::NUMBER, double> {
+     double number_value() const override { return m_value; }
+     int int_value() const override { return static_cast<int>(m_value); }
