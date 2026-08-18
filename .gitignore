@@ -1,8 +1,12 @@
-# Local build outputs
+# CMake build outputs
+build/
+compile_commands.json
+
+# Artifacts from the previous Make-based local build
 MP*/template
 MP*/solution
 MP*/template.o
-MP*/bench/
+third_party/
 
-# Dependency bootstrapped by the root Makefile
-third_party/libwb/
+# Outputs produced by the dataset harness
+MP*/bench/

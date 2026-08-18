@@ -2,7 +2,9 @@
 #include "wb.h"
 
 __global__ void vecAdd(float *in1, float *in2, float *out, int len) {
-  //@@ Insert code to implement vector addition here
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < len)
+        out[i] = in1[i] + in2[i];
 }
 
 int main(int argc, char **argv) {
@@ -28,13 +30,18 @@ int main(int argc, char **argv) {
   wbLog(TRACE, "The input length is ", inputLength);
 
   wbTime_start(GPU, "Allocating GPU memory.");
-  //@@ Allocate GPU memory here
+  // not error handling, this is bad
+  cudaMalloc((void **) &deviceInput1, sizeof(float) * inputLength);
+  cudaMalloc((void **) &deviceInput2, sizeof(float) * inputLength);
+  cudaMalloc((void **) &deviceOutput, sizeof(float) * inputLength);
   wbTime_stop(GPU, "Allocating GPU memory.");
 
   wbTime_start(GPU, "Copying input memory to the GPU.");
-  //@@ Copy memory to the GPU here
+  cudaMemcpy(deviceInput1, hostInput1, sizeof(float) * inputLength, cudaMemcpyHostToDevice);
+  cudaMemcpy(deviceInput2, hostInput2, sizeof(float) * inputLength, cudaMemcpyHostToDevice);
   wbTime_stop(GPU, "Copying input memory to the GPU.");
   //@@ Initialize the grid and block dimensions here
+  int n_blocks = (input_length + 255) / 256;
 
   wbTime_start(Compute, "Performing CUDA computation");
   //@@ Launch the GPU Kernel here
