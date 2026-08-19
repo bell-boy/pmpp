@@ -68,12 +68,16 @@ endforeach()
 add_test(NAME mp0-device-info COMMAND mp0)
 
 function(add_vector_test mp dataset inputs extension)
+  set(test_name "mp${mp}-dataset-${dataset}")
   add_test(
-    NAME "mp${mp}-dataset-${dataset}"
+    NAME "${test_name}"
     COMMAND "${CMAKE_BINARY_DIR}/MP${mp}/template"
       -e "${CMAKE_CURRENT_SOURCE_DIR}/MP${mp}/data/${dataset}/output.${extension}"
       -i "${inputs}"
       -t vector
+  )
+  set_tests_properties("${test_name}" PROPERTIES
+    FAIL_REGULAR_EXPRESSION "Solution is NOT correct"
   )
 endfunction()
 
@@ -99,6 +103,9 @@ foreach(dataset RANGE 0 9)
       -e "${CMAKE_CURRENT_SOURCE_DIR}/MP7/data/${dataset}/output.ppm"
       -i "${CMAKE_CURRENT_SOURCE_DIR}/MP7/data/${dataset}/input.ppm"
       -t image
+  )
+  set_tests_properties("mp7-dataset-${dataset}" PROPERTIES
+    FAIL_REGULAR_EXPRESSION "Solution is NOT correct"
   )
 endforeach()
 
